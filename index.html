@@ -129,7 +129,7 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
 <body>
 <div class="bg-orb"></div><div class="bg-orb"></div><div class="bg-orb"></div>
 <div class="app">
-<div class="sidebar"><div class="sidebar-logo">Alloso<small>만능 취합 봇 Ver3</small></div>
+<div class="sidebar"><div class="sidebar-logo">Alloso<small>만능 취합 봇 Ver4</small></div>
 <ul class="nav-menu">
 <li class="nav-item active" onclick="switchTab('response')"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span><span>매장 답변</span></li>
 <li class="nav-item" onclick="switchTab('admin')"><span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><span>본사 관리</span></li>
@@ -185,7 +185,7 @@ function deselAll(){selectedStores=[];if(activeIdx>=0)topics[activeIdx].stores=[
 // Topics
 function addTopic(){topics.push({title:'새 조사 '+(topics.length+1),desc:'',questions:[],stores:[],status:'draft',allowDuplicate:false});activeIdx=topics.length-1;renderTopics();openEditor();}
 function renderTopics(){var c=document.getElementById('topicList');if(!topics.length){c.innerHTML='<div class="empty" style="padding:20px;"><p>새 조사를 추가해주세요</p></div>';return;}
-c.innerHTML=topics.map(function(t,i){var badge=t.status==='live'?'badge-live':t.status==='stopped'?'badge-stop':'badge-draft';var label=t.status==='live'?'배포중':t.status==='stopped'?'중지':'초안';return '<div class="topic-item '+(i===activeIdx?'active':'')+'" onclick="clickTopic('+i+')"><div><h5>'+t.title+'</h5><p>'+t.questions.length+'개 질문'+(t.allowDuplicate?' · 중복허용':'')+'</p></div><span class="badge '+badge+'">'+label+'</span></div>';}).join('');}
+c.innerHTML=topics.map(function(t,i){var badge=t.status==='live'?'badge-live':t.status==='stopped'?'badge-stop':'badge-draft';var label=t.status==='live'?'배포중':t.status==='stopped'?'중지':'초안';return '<div class="topic-item '+(i===activeIdx?'active':'')+'" onclick="clickTopic('+i+')"><div><h5>'+t.title+'</h5><p>'+t.questions.length+'개 질문'+(t.allowDuplicate===true?' · 중복허용':'')+'</p></div><span class="badge '+badge+'">'+label+'</span></div>';}).join('');}
 function clickTopic(i){if(activeIdx===i){activeIdx=-1;document.getElementById('editorSection').classList.remove('open');renderTopics();return;}activeIdx=i;renderTopics();openEditor();}
 function openEditor(){var t=topics[activeIdx];document.getElementById('editorSection').classList.add('open');document.getElementById('surveyTitle').value=t.title;document.getElementById('surveyDesc').value=t.desc;document.getElementById('chkDuplicate').checked=t.allowDuplicate;selectedStores=t.stores.slice();renderStores();renderQGrid();}
 function updateField(f){if(activeIdx<0)return;var t=topics[activeIdx];if(f==='title'){t.title=document.getElementById('surveyTitle').value;renderTopics();}else if(f==='desc')t.desc=document.getElementById('surveyDesc').value;else if(f==='allowDuplicate')t.allowDuplicate=document.getElementById('chkDuplicate').checked;renderTopics();}
