@@ -110,7 +110,10 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
 .survey-banner{background:linear-gradient(135deg,rgba(196,30,58,0.12),rgba(100,20,40,0.06));border:1px solid rgba(196,30,58,0.12);padding:22px 26px;border-radius:14px;margin-bottom:20px;}
 .survey-banner h3{font-size:1.05em;font-weight:700;}.survey-banner p{font-size:0.82em;color:rgba(255,255,255,0.4);margin-top:5px;}
 .empty{text-align:center;padding:40px 16px;color:rgba(255,255,255,0.2);}.empty p{font-size:0.85em;line-height:1.5;}
-.pending-box{margin-top:16px;padding:16px;background:rgba(196,30,58,0.04);border:1px solid rgba(196,30,58,0.1);border-radius:10px;}.pending-box strong{color:#e85d75;font-size:0.82em;}.pending-box p{margin-top:6px;color:rgba(255,255,255,0.4);font-size:0.78em;line-height:1.6;}
+.pending-box{margin-top:16px;padding:18px;background:rgba(196,30,58,0.04);border:1px solid rgba(196,30,58,0.1);border-radius:10px;}
+.pending-box strong{color:#e85d75;font-size:0.82em;display:block;margin-bottom:10px;}
+.pending-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px;}
+.pending-chip{padding:7px 10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:6px;font-size:0.75em;color:rgba(255,255,255,0.5);text-align:center;}
 .ai-box{background:linear-gradient(135deg,rgba(99,102,241,0.07),rgba(139,92,246,0.03));border:1px solid rgba(99,102,241,0.18);border-radius:12px;padding:20px;margin-bottom:16px;}
 .ai-box h4{font-size:0.88em;font-weight:600;color:#a5b4fc;margin-bottom:8px;}
 .ai-input-row{display:flex;gap:7px;margin-bottom:10px;}.ai-input-row input{flex:1;}.ai-input-row button{white-space:nowrap;}
@@ -119,7 +122,7 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
 .ai-option.selected{border-color:rgba(99,102,241,0.5);background:rgba(99,102,241,0.07);}
 .ai-option h6{font-size:0.8em;font-weight:600;color:#c7d2fe;margin-bottom:4px;}
 .ai-spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,0.15);border-top-color:#a5b4fc;border-radius:50%;animation:spin 0.7s linear infinite;}
-.filter-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}.filter-bar select{padding:8px 12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:7px;color:#fff;font-size:0.8em;font-family:inherit;}
+.filter-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}.filter-bar select{padding:9px 14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:9px;color:#fff;font-size:0.82em;font-family:inherit;padding-right:32px;}
 .chk-label{display:flex;align-items:center;gap:6px;font-size:0.8em;color:rgba(255,255,255,0.6);cursor:pointer;margin-top:8px;}
 .chk-label input{accent-color:#c41e3a;}
 @media(max-width:900px){.sidebar{display:none;}.main{margin-left:0;padding:24px 14px;}.stats-grid{grid-template-columns:1fr 1fr;}.store-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));}.page-title{font-size:1.3em;}.ai-input-row{flex-direction:column;}.q-mini:hover{transform:scale(1.3);}}
@@ -129,7 +132,7 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
 <body>
 <div class="bg-orb"></div><div class="bg-orb"></div><div class="bg-orb"></div>
 <div class="app">
-<div class="sidebar"><div class="sidebar-logo">Alloso<small>만능 취합 봇 Ver14</small></div>
+<div class="sidebar"><div class="sidebar-logo">Alloso<small>만능 취합 봇 Ver15</small></div>
 <ul class="nav-menu">
 <li class="nav-item active" onclick="switchTab('response')"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span><span>매장 답변</span></li>
 <li class="nav-item" onclick="switchTab('admin')"><span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><span>본사 관리</span></li>
@@ -329,7 +332,7 @@ var qs=sv.questions?sv.questions.map(function(q){return q.text;}):Object.keys(da
 var h='<div style="overflow-x:auto;"><table class="result-table"><thead><tr><th>매장</th><th>답변자</th>'+qs.map(function(q){return '<th>'+q+'</th>';}).join('')+'<th>시간</th></tr></thead><tbody>';
 data.forEach(function(r){h+='<tr><td style="font-weight:600;color:#fff;">'+(r.store||'-')+'</td><td>'+(r.responder||'-')+'</td>'+qs.map(function(q){var val=(r.answers&&r.answers[q])||'-';if(val!=='-'&&!isNaN(String(val).replace(/,/g,'')))val=fmtN(val);return '<td>'+val+'</td>';}).join('')+'<td style="font-size:0.72em;color:rgba(255,255,255,0.2);">'+(r.timestamp||'-')+'</td></tr>';});
 h+='</tbody></table></div>';
-if(sv.stores){var a2=data.map(function(r){return r.store;});var p=sv.stores.filter(function(s){return a2.indexOf(s)===-1;});if(p.length)h+='<div class="pending-box"><strong>미답변 ('+p.length+')</strong><p>'+p.join(', ')+'</p></div>';}
+if(sv.stores){var a2=data.map(function(r){return r.store;});var p=sv.stores.filter(function(s){return a2.indexOf(s)===-1;});if(p.length)h+='<div class="pending-box"><strong>미답변 매장 ('+p.length+'개)</strong><div class="pending-grid">'+p.map(function(s){return '<div class="pending-chip">'+s+'</div>';}).join('')+'</div></div>';}
 area.innerHTML=h;}
 
 function renderSummaryForSurvey(sv,svData){var sa=document.getElementById('summaryArea');if(!svData.length||!sv.questions){sa.innerHTML='';return;}
