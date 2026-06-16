@@ -61,16 +61,19 @@ select option{background:#1a1a2e;color:#fff;}
 .survey-picker::after{content:'';position:absolute;bottom:0;left:0;right:0;height:40px;background:linear-gradient(transparent,rgba(26,26,46,0.9));pointer-events:none;}
 .survey-pick-item{padding:14px 18px;border:1px solid rgba(255,255,255,0.06);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all 0.3s;opacity:0.7;}
 .survey-pick-item:hover{opacity:1;border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.03);}
-.survey-pick-item.picked{opacity:1;border-color:rgba(196,30,58,0.4);background:rgba(196,30,58,0.08);}
+.survey-pick-item:active{transform:scale(0.97);opacity:1;}
+.survey-pick-item.picked{opacity:1;border-color:rgba(196,30,58,0.4);background:rgba(196,30,58,0.08);transform:scale(1);animation:pickPulse 0.3s ease;}
+@keyframes pickPulse{0%{transform:scale(0.96);}50%{transform:scale(1.01);}100%{transform:scale(1);}}
 .survey-pick-item h5{font-size:0.88em;font-weight:600;}.survey-pick-item p{font-size:0.72em;color:rgba(255,255,255,0.35);margin-top:3px;}
 .picked-banner{background:rgba(196,30,58,0.08);border:1px solid rgba(196,30,58,0.2);border-radius:10px;padding:12px 16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
 .picked-banner h5{font-size:0.85em;font-weight:600;color:#e85d75;}
 .picked-banner .btn-xs{padding:4px 10px;font-size:0.7em;}
 /* Custom select styling */
 select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.4)' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;}
-.topic-item{padding:14px 18px;border:1px solid rgba(255,255,255,0.06);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;}
+.topic-item{padding:14px 18px;border:1px solid rgba(255,255,255,0.06);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all 0.3s;display:flex;justify-content:space-between;align-items:center;}
 .topic-item:hover{border-color:rgba(255,255,255,0.12);background:rgba(255,255,255,0.02);}
-.topic-item.active{border-color:rgba(196,30,58,0.35);background:rgba(196,30,58,0.06);}
+.topic-item:active{transform:scale(0.97);}
+.topic-item.active{border-color:rgba(196,30,58,0.35);background:rgba(196,30,58,0.06);animation:pickPulse 0.3s ease;}
 .topic-item h5{font-size:0.86em;font-weight:600;}.topic-item p{font-size:0.72em;color:rgba(255,255,255,0.35);margin-top:3px;}
 .badge{padding:3px 8px;border-radius:5px;font-size:0.66em;font-weight:600;}
 .badge-live{background:rgba(76,175,80,0.15);color:#66bb6a;}
@@ -189,9 +192,9 @@ function updateField(f){if(activeIdx<0)return;var t=topics[activeIdx];if(f==='ti
 function deleteTopic(){if(activeIdx<0)return;if(!confirm('삭제하시겠습니까?'))return;topics.splice(activeIdx,1);activeIdx=-1;document.getElementById('editorSection').classList.remove('open');renderTopics();}
 function toggleDeploy(){if(activeIdx<0)return;var t=topics[activeIdx];if(t.status==='live')t.status='stopped';else if(t.status==='stopped')t.status='draft';else t.status='live';renderTopics();}
 function deploySurvey(){if(activeIdx<0){alert('조사를 선택하세요.');return;}var t=topics[activeIdx];if(!t.title.trim()){alert('제목을 입력하세요.');return;}if(!t.questions.length){alert('질문을 추가하세요.');return;}if(!t.stores.length){alert('매장을 선택하세요.');return;}t.status='live';
-// 여러 조사를 배포하는 구조: 배포 데이터에 모든 live 조사를 저장
-var liveTopics=topics.filter(function(tp){return tp.status==='live';});var settings={title:t.title,desc:t.desc,questions:t.questions,stores:t.stores,allowDuplicate:t.allowDuplicate,allSurveys:liveTopics,createdAt:new Date().toLocaleString('ko-KR')};
-post('saveSettings',settings).then(function(){currentSurvey=settings;alert('"'+t.title+'" 배포 완료');renderTopics();});}
+// 모든 live 조사를 allSurveys에 저장
+var liveTopics=topics.filter(function(tp){return tp.status==='live';});var settings={title:liveTopics[0].title,desc:liveTopics[0].desc,questions:liveTopics[0].questions,stores:liveTopics[0].stores,allowDuplicate:liveTopics[0].allowDuplicate,allSurveys:liveTopics,createdAt:new Date().toLocaleString('ko-KR')};
+post('saveSettings',settings).then(function(){currentSurvey=settings;alert('"'+t.title+'" 배포 완료 (총 '+liveTopics.length+'개 조사 배포중)');renderTopics();});}
 // Questions
 function addQ(){if(activeIdx<0)return;topics[activeIdx].questions.push({id:Date.now(),text:'',type:'text',options:[]});renderQGrid();}
 function renderQGrid(){if(activeIdx<0)return;var qs=topics[activeIdx].questions;document.getElementById('qCount').textContent=qs.length;var c=document.getElementById('qGrid');if(!qs.length){c.innerHTML='<div class="empty" style="padding:16px;width:100%;"><p>질문 없음</p></div>';return;}
@@ -226,8 +229,7 @@ currentSurvey=s;
 var surveys=s.allSurveys&&s.allSurveys.length?s.allSurveys.filter(function(x){return x.status==='live';}):null;
 if(!surveys||!surveys.length)surveys=[s];
 window._liveSurveys=surveys;window._pickedIdx=0;
-var h='';
-if(surveys.length>1){h+='<div class="survey-picker" id="surveyPicker">'+surveys.map(function(sv,i){return '<div class="survey-pick-item '+(i===0?'picked':'')+'" onclick="pickSurvey('+i+')"><h5>'+sv.title+'</h5><p>'+(sv.questions?sv.questions.length:0)+'개 질문</p></div>';}).join('')+'</div>';}
+var h='<div class="survey-picker" id="surveyPicker">'+surveys.map(function(sv,i){return '<div class="survey-pick-item '+(i===0?'picked':'')+'" onclick="pickSurvey('+i+')"><h5>'+sv.title+'</h5><p>'+(sv.questions?sv.questions.length:0)+'개 질문'+(sv.desc?' · '+sv.desc:'')+'</p></div>';}).join('')+'</div>';
 h+='<div id="pickedBannerArea"></div><div id="dynForm"></div>';
 area.innerHTML=h;renderPickedBanner();renderSurveyForm();});}
 
@@ -235,6 +237,7 @@ function pickSurvey(idx){if(window._pickedIdx===idx)return;if(!confirm('조사�
 function renderPickedBanner(){var sv=window._liveSurveys[window._pickedIdx];var ba=document.getElementById('pickedBannerArea');if(!ba)return;ba.innerHTML='<div class="picked-banner"><h5>선택: '+sv.title+'</h5><span style="font-size:0.72em;color:rgba(255,255,255,0.35);">'+(sv.questions?sv.questions.length:0)+'개 질문</span></div>';}
 
 function renderSurveyForm(){var idx=window._pickedIdx||0;var sv=window._liveSurveys[idx];var area=document.getElementById('dynForm');
+area.innerHTML='<div style="text-align:center;padding:20px;"><span class="ai-spinner"></span></div>';
 // 답변 완료 매장 체크 (getResponses로 확인)
 jsonpGet('getResponses').then(function(resps){
 var answered=[];if(Array.isArray(resps))resps.forEach(function(r){if(r.store&&r.answers)answered.push(r.store);});
