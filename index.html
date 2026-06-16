@@ -128,7 +128,7 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
 <body>
 <div class="bg-orb"></div><div class="bg-orb"></div><div class="bg-orb"></div>
 <div class="app">
-<div class="sidebar"><div class="sidebar-logo">Alloso<small>만능 취합 봇 Ver9</small></div>
+<div class="sidebar"><div class="sidebar-logo">Alloso<small>만능 취합 봇 Ver10</small></div>
 <ul class="nav-menu">
 <li class="nav-item active" onclick="switchTab('response')"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span><span>매장 답변</span></li>
 <li class="nav-item" onclick="switchTab('admin')"><span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><span>본사 관리</span></li>
@@ -269,7 +269,7 @@ if(!storeOptions.length)h+='<p style="color:#e85d75;font-size:0.82em;margin-bott
 h+='<div class="form-group"><label>답변자명</label><input type="text" id="rName" placeholder="이름"></div>';
 sv.questions.forEach(function(q,i){h+='<div class="form-group" style="margin-top:20px;"><label>Q'+(i+1)+'. '+q.text+'</label>';
 if(q.type==='text')h+='<textarea id="a_'+i+'" placeholder="답변"></textarea>';
-else if(q.type==='number')h+='<input type="number" id="a_'+i+'" placeholder="숫자">';
+else if(q.type==='number')h+='<input type="text" id="a_'+i+'" placeholder="숫자" oninput="formatNum(this)" inputmode="numeric">';
 else if(q.type==='date')h+='<input type="date" id="a_'+i+'">';
 else if(q.type==='yesno')h+='<select id="a_'+i+'"><option value="">선택</option><option value="예">예</option><option value="아니오">아니오</option></select>';
 else if(q.type==='select')h+='<select id="a_'+i+'"><option value="">선택</option>'+q.options.map(function(o){return '<option value="'+o+'">'+o+'</option>';}).join('')+'</select>';
@@ -279,7 +279,7 @@ h+='<div style="text-align:center;margin-top:28px;"><button class="btn btn-red" 
 area.innerHTML=h;});}
 
 function submitR(){var sv=window._liveSurveys[window._pickedIdx||0];var store=document.getElementById('rStore').value,name=document.getElementById('rName').value.trim();
-if(!store){alert('매장 선택');return;}if(!name){alert('이름 입력');return;}var answers={};sv.questions.forEach(function(q,i){if(q.type==='multiselect'){var cbs=document.querySelectorAll('#a_'+i+' input:checked');answers[q.text]=Array.from(cbs).map(function(c){return c.value;}).join(', ');}else{var el=document.getElementById('a_'+i);answers[q.text]=el?el.value:'';}});
+if(!store){alert('매장 선택');return;}if(!name){alert('이름 입력');return;}var answers={};sv.questions.forEach(function(q,i){if(q.type==='multiselect'){var cbs=document.querySelectorAll('#a_'+i+' input:checked');answers[q.text]=Array.from(cbs).map(function(c){return c.value;}).join(', ');}else{var el=document.getElementById('a_'+i);var val=el?el.value:'';if(q.type==='number')val=val.replace(/,/g,'');answers[q.text]=val;}});
 post('saveResponse',{store:store,responder:name,answers:answers,surveyTitle:sv.title,timestamp:new Date().toLocaleString('ko-KR')}).then(function(){alert('제출 완료');renderSurveyForm();});}
 
 // === 취합 결과 + AI 해석 요약 ===
@@ -292,7 +292,7 @@ function filterR(){var f=document.getElementById('filterStore').value;renderR(f?
 function renderR(data){var area=document.getElementById('resultArea');if(!data||!data.length){area.innerHTML='<div class="empty"><p>답변 없음</p></div>';return;}
 var qs=currentSurvey?currentSurvey.questions.map(function(q){return q.text;}):Object.keys(data[0].answers||{});
 var h='<div style="overflow-x:auto;"><table class="result-table"><thead><tr><th>매장</th><th>답변자</th>'+qs.map(function(q){return '<th>'+q+'</th>';}).join('')+'<th>시간</th></tr></thead><tbody>';
-data.forEach(function(r){h+='<tr><td style="font-weight:600;color:#fff;">'+(r.store||'-')+'</td><td>'+(r.responder||'-')+'</td>'+qs.map(function(q){return '<td>'+((r.answers&&r.answers[q])||'-')+'</td>';}).join('')+'<td style="font-size:0.72em;color:rgba(255,255,255,0.2);">'+(r.timestamp||'-')+'</td></tr>';});
+data.forEach(function(r){h+='<tr><td style="font-weight:600;color:#fff;">'+(r.store||'-')+'</td><td>'+(r.responder||'-')+'</td>'+qs.map(function(q){var val=(r.answers&&r.answers[q])||'-';if(val!=='-'&&!isNaN(String(val).replace(/,/g,'')))val=fmtN(val);return '<td>'+val+'</td>';}).join('')+'<td style="font-size:0.72em;color:rgba(255,255,255,0.2);">'+(r.timestamp||'-')+'</td></tr>';});
 h+='</tbody></table></div>';if(currentSurvey&&currentSurvey.stores){var a2=data.map(function(r){return r.store;});var p=currentSurvey.stores.filter(function(s){return a2.indexOf(s)===-1;});if(p.length)h+='<div class="pending-box"><strong>미답변 ('+p.length+')</strong><p>'+p.join(', ')+'</p></div>';}area.innerHTML=h;}
 
 // AI 해석 요약 (품목별 수량 합산 등)
@@ -301,8 +301,12 @@ var numQs=currentSurvey.questions.filter(function(q){return q.type==='number';})
 var h='<div class="summary-box"><h4>품목별 취합 요약</h4><table class="summary-table"><thead><tr><th>항목</th><th>합계</th><th>평균</th><th>최소</th><th>최대</th><th>응답수</th></tr></thead><tbody>';
 numQs.forEach(function(q){var vals=[];allResults.forEach(function(r){if(r.answers&&r.answers[q.text]){var v=parseFloat(r.answers[q.text]);if(!isNaN(v))vals.push(v);}});
 var sum=vals.reduce(function(a,b){return a+b;},0);var avg=vals.length?Math.round(sum/vals.length*10)/10:0;var mn=vals.length?Math.min.apply(null,vals):0;var mx=vals.length?Math.max.apply(null,vals):0;
-h+='<tr><td style="font-weight:600;color:#fff;">'+q.text+'</td><td>'+sum+'</td><td>'+avg+'</td><td>'+mn+'</td><td>'+mx+'</td><td>'+vals.length+'</td></tr>';});
+h+='<tr><td style="font-weight:600;color:#fff;">'+q.text+'</td><td>'+fmtN(sum)+'</td><td>'+fmtN(avg)+'</td><td>'+fmtN(mn)+'</td><td>'+fmtN(mx)+'</td><td>'+vals.length+'</td></tr>';});
 h+='</tbody></table></div>';sa.innerHTML=h;}
+
+// Number formatting
+function formatNum(el){var v=el.value.replace(/[^\d]/g,'');el.value=v?Number(v).toLocaleString('ko-KR'):'';}
+function fmtN(v){var n=parseFloat(String(v).replace(/,/g,''));return isNaN(n)?v:n.toLocaleString('ko-KR');}
 
 // Init
 (function(){renderStores();renderTopics();jsonpGet('getSettings').then(function(s){if(s&&s.title){currentSurvey=s;
