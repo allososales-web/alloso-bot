@@ -255,34 +255,97 @@ function generateAI(){
 }
 
 function generateSuggestions(prompt){
-  // 스마트 분석 기반 추천 생성
   var keywords = prompt.toLowerCase();
-  var suggestions = [];
-  
-  // 유형 A: 간결한 버전
   var typeA = {name:'간결형', desc:'핵심 정보만 빠르게 수집', questions:[]};
-  // 유형 B: 상세한 버전  
   var typeB = {name:'상세형', desc:'깊이 있는 정보 수집', questions:[]};
+
+  // 품목/항목 추출: 쉼표, 줄바꿈, 슬래시, 'and', 중점 등으로 나열된 항목 감지
+  var items = extractItems(prompt);
   
-  if(keywords.indexOf('프로모션')>-1||keywords.indexOf('이벤트')>-1||keywords.indexOf('행사')>-1){
+  // 수량/재고 관련 키워드 감지
+  var isQuantity = keywords.indexOf('수량')>-1||keywords.indexOf('재고')>-1||keywords.indexOf('물량')>-1||keywords.indexOf('입고')>-1||keywords.indexOf('개수')>-1||keywords.indexOf('몇')>-1;
+  var isStatus = keywords.indexOf('현황')>-1||keywords.indexOf('상태')>-1||keywords.indexOf('파악')>-1||keywords.indexOf('확인')>-1;
+  var isPromo = keywords.indexOf('프로모션')>-1||keywords.indexOf('이벤트')>-1||keywords.indexOf('행사')>-1;
+  var isSales = keywords.indexOf('매출')>-1||keywords.indexOf('실적')>-1||keywords.indexOf('판매')>-1;
+  var isStaff = keywords.indexOf('인력')>-1||keywords.indexOf('직원')>-1||keywords.indexOf('근무')>-1;
+
+  if(items.length > 0 && (isQuantity || isStatus)) {
+    // 품목이 나열되어 있고 수량/현황 파악인 경우 → 품목별 질문 자동 생성
+    typeA.desc = '품목별 수량만 간단 수집 ('+items.length+'개 품목)';
+    typeB.desc = '품목별 수량 + 상태 상세 수집 ('+items.length+'개 품목)';
+    items.forEach(function(item){
+      typeA.questions.push({text:item+' 수량',type:'number',options:[]});
+    });
+    typeA.questions.push({text:'비고',type:'text',options:[]});
+    items.forEach(function(item){
+      typeB.questions.push({text:item+' 현재 수량',type:'number',options:[]});
+      typeB.questions.push({text:item+' 필요 수량',type:'number',options:[]});
+    });
+    typeB.questions.push({text:'긴급 보충 필요 품목',type:'text',options:[]});
+    typeB.questions.push({text:'비고',type:'text',options:[]});
+  } else if(items.length > 0 && isSales) {
+    typeA.desc = '품목별 판매 현황 간단 수집 ('+items.length+'개 품목)';
+    typeB.desc = '품목별 판매 + 분석 상세 수집 ('+items.length+'개 품목)';
+    items.forEach(function(item){
+      typeA.questions.push({text:item+' 판매 수량',type:'number',options:[]});
+    });
+    typeA.questions.push({text:'비고',type:'text',options:[]});
+    items.forEach(function(item){
+      typeB.questions.push({text:item+' 판매 수량',type:'number',options:[]});
+      typeB.questions.push({text:item+' 판매 금액 (만원)',type:'number',options:[]});
+    });
+    typeB.questions.push({text:'가장 반응 좋은 품목',type:'text',options:[]});
+    typeB.questions.push({text:'추가 의견',type:'text',options:[]});
+  } else if(items.length > 0) {
+    // 품목은 있지만 특정 키워드 없는 경우 → 범용 품목별
+    typeA.desc = '항목별 현황 간단 수집 ('+items.length+'개 항목)';
+    typeB.desc = '항목별 상세 현황 수집 ('+items.length+'개 항목)';
+    items.forEach(function(item){
+      typeA.questions.push({text:item+' 현황',type:'text',options:[]});
+    });
+    typeA.questions.push({text:'비고',type:'text',options:[]});
+    items.forEach(function(item){
+      typeB.questions.push({text:item+' 현황',type:'text',options:[]});
+      typeB.questions.push({text:item+' 수량/수치',type:'number',options:[]});
+    });
+    typeB.questions.push({text:'특이사항',type:'text',options:[]});
+  } else if(isPromo) {
     typeA.questions=[{text:'프로모션 참여 여부',type:'yesno',options:[]},{text:'예상 참여 고객 수',type:'number',options:[]},{text:'필요 지원 사항',type:'text',options:[]}];
     typeB.questions=[{text:'프로모션 참여 여부',type:'yesno',options:[]},{text:'참여 형태',type:'select',options:['전면 참여','부분 참여','미참여']},{text:'예상 참여 고객 수',type:'number',options:[]},{text:'예상 매출 효과 (만원)',type:'number',options:[]},{text:'필요 지원 사항',type:'text',options:[]},{text:'추가 의견',type:'text',options:[]}];
-  } else if(keywords.indexOf('매출')>-1||keywords.indexOf('실적')>-1||keywords.indexOf('판매')>-1){
+  } else if(isSales) {
     typeA.questions=[{text:'금월 매출 (만원)',type:'number',options:[]},{text:'전월 대비 증감',type:'select',options:['증가','동일','감소']},{text:'주요 판매 품목',type:'text',options:[]}];
     typeB.questions=[{text:'금월 매출 (만원)',type:'number',options:[]},{text:'전월 대비 증감률 (%)',type:'number',options:[]},{text:'주요 판매 품목 TOP3',type:'text',options:[]},{text:'매출 하락/상승 원인',type:'text',options:[]},{text:'다음 달 예상 매출',type:'number',options:[]},{text:'필요 지원 사항',type:'text',options:[]}];
-  } else if(keywords.indexOf('재고')>-1||keywords.indexOf('입고')>-1||keywords.indexOf('물량')>-1){
+  } else if(isQuantity) {
     typeA.questions=[{text:'부족 제품명',type:'text',options:[]},{text:'필요 수량',type:'number',options:[]},{text:'긴급도',type:'select',options:['긴급','보통','여유']}];
     typeB.questions=[{text:'부족 제품명',type:'text',options:[]},{text:'현재 재고 수량',type:'number',options:[]},{text:'필요 수량',type:'number',options:[]},{text:'긴급도',type:'select',options:['긴급','보통','여유']},{text:'예상 소진 일자',type:'date',options:[]},{text:'대체 가능 여부',type:'yesno',options:[]}];
-  } else if(keywords.indexOf('인력')>-1||keywords.indexOf('직원')>-1||keywords.indexOf('근무')>-1){
+  } else if(isStaff) {
     typeA.questions=[{text:'현재 인원',type:'number',options:[]},{text:'추가 필요 인원',type:'number',options:[]},{text:'희망 근무 시간대',type:'text',options:[]}];
     typeB.questions=[{text:'현재 정직원 수',type:'number',options:[]},{text:'현재 파트타임 수',type:'number',options:[]},{text:'추가 필요 인원',type:'number',options:[]},{text:'필요 포지션',type:'select',options:['판매','재고관리','CS','기타']},{text:'희망 투입 시기',type:'date',options:[]},{text:'상세 사유',type:'text',options:[]}];
   } else {
-    // 범용
     typeA.questions=[{text:'현황 보고',type:'text',options:[]},{text:'문제 여부',type:'yesno',options:[]},{text:'비고',type:'text',options:[]}];
     typeB.questions=[{text:'현재 상황',type:'text',options:[]},{text:'문제 여부',type:'yesno',options:[]},{text:'문제 상세 내용',type:'text',options:[]},{text:'개선 필요 사항',type:'text',options:[]},{text:'긴급도',type:'select',options:['상','중','하']},{text:'추가 의견',type:'text',options:[]}];
   }
-  
   return [typeA, typeB];
+}
+
+// 자연어에서 품목/항목 리스트 추출
+function extractItems(text){
+  // 키워드 제거 (수량, 재고, 파악, 현황 등의 지시어 제거)
+  var cleaned = text.replace(/수량|재고|물량|입고|파악|현황|확인|조사|각\s*매장|매장별|품목|제품|의\s|을\s|를\s|좀|해줘|하고\s*싶|알려줘|부탁/g,'').trim();
+  // 구분자로 분리: 쉼표, /, 중점·, 줄바꿈, 'and', '그리고'
+  var parts = cleaned.split(/[,，\/\n·]|\s*그리고\s*|\s*and\s*/i);
+  var items = [];
+  parts.forEach(function(p){
+    var trimmed = p.trim().replace(/^\s*[-•]\s*/,'');
+    // 2글자 이상이고 의미 있는 항목만
+    if(trimmed.length >= 2 && trimmed.length <= 30){
+      // 숫자만 있는 경우 제외
+      if(!/^\d+$/.test(trimmed)){
+        items.push(trimmed);
+      }
+    }
+  });
+  return items;
 }
 
 function renderAISuggestions(area){
