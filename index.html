@@ -190,11 +190,16 @@ function clickTopic(i){if(activeIdx===i){activeIdx=-1;document.getElementById('e
 function openEditor(){var t=topics[activeIdx];document.getElementById('editorSection').classList.add('open');document.getElementById('surveyTitle').value=t.title;document.getElementById('surveyDesc').value=t.desc;document.getElementById('chkDuplicate').checked=t.allowDuplicate;selectedStores=t.stores.slice();renderStores();renderQGrid();}
 function updateField(f){if(activeIdx<0)return;var t=topics[activeIdx];if(f==='title'){t.title=document.getElementById('surveyTitle').value;renderTopics();}else if(f==='desc')t.desc=document.getElementById('surveyDesc').value;else if(f==='allowDuplicate')t.allowDuplicate=document.getElementById('chkDuplicate').checked;renderTopics();}
 function deleteTopic(){if(activeIdx<0)return;if(!confirm('삭제하시겠습니까?'))return;topics.splice(activeIdx,1);activeIdx=-1;document.getElementById('editorSection').classList.remove('open');renderTopics();}
-function toggleDeploy(){if(activeIdx<0)return;var t=topics[activeIdx];if(t.status==='live')t.status='stopped';else if(t.status==='stopped')t.status='draft';else t.status='live';renderTopics();}
+function toggleDeploy(){if(activeIdx<0)return;var t=topics[activeIdx];if(t.status==='live')t.status='stopped';else t.status='live';renderTopics();
+// 상태 변경 시 자동 저장
+var liveTopics=topics.filter(function(tp){return tp.status==='live';});
+if(liveTopics.length){var settings={title:liveTopics[0].title,desc:liveTopics[0].desc,questions:liveTopics[0].questions,stores:liveTopics[0].stores,allowDuplicate:liveTopics[0].allowDuplicate,allSurveys:liveTopics,createdAt:new Date().toLocaleString('ko-KR')};post('saveSettings',settings).then(function(){currentSurvey=settings;});}}
 function deploySurvey(){if(activeIdx<0){alert('조사를 선택하세요.');return;}var t=topics[activeIdx];if(!t.title.trim()){alert('제목을 입력하세요.');return;}if(!t.questions.length){alert('질문을 추가하세요.');return;}if(!t.stores.length){alert('매장을 선택하세요.');return;}t.status='live';
 // 모든 live 조사를 allSurveys에 저장
-var liveTopics=topics.filter(function(tp){return tp.status==='live';});var settings={title:liveTopics[0].title,desc:liveTopics[0].desc,questions:liveTopics[0].questions,stores:liveTopics[0].stores,allowDuplicate:liveTopics[0].allowDuplicate,allSurveys:liveTopics,createdAt:new Date().toLocaleString('ko-KR')};
-post('saveSettings',settings).then(function(){currentSurvey=settings;alert('"'+t.title+'" 배포 완료 (총 '+liveTopics.length+'개 조사 배포중)');renderTopics();});}
+var liveTopics=topics.filter(function(tp){return tp.status==='live';});
+if(!liveTopics.length){alert('배포중인 조사가 없습니다.');return;}
+var settings={title:liveTopics[0].title,desc:liveTopics[0].desc,questions:liveTopics[0].questions,stores:liveTopics[0].stores,allowDuplicate:liveTopics[0].allowDuplicate,allSurveys:liveTopics,createdAt:new Date().toLocaleString('ko-KR')};
+post('saveSettings',settings).then(function(){currentSurvey=settings;alert('배포 완료 ('+liveTopics.length+'개 조사 배포중: '+liveTopics.map(function(x){return x.title;}).join(', ')+')');renderTopics();});}
 // Questions
 function addQ(){if(activeIdx<0)return;topics[activeIdx].questions.push({id:Date.now(),text:'',type:'text',options:[]});renderQGrid();}
 function renderQGrid(){if(activeIdx<0)return;var qs=topics[activeIdx].questions;document.getElementById('qCount').textContent=qs.length;var c=document.getElementById('qGrid');if(!qs.length){c.innerHTML='<div class="empty" style="padding:16px;width:100%;"><p>질문 없음</p></div>';return;}
