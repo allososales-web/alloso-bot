@@ -94,8 +94,8 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
 .stat-val{font-size:1.8em;font-weight:800;background:linear-gradient(135deg,#fff,rgba(255,255,255,0.6));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .stat-label{font-size:0.7em;color:rgba(255,255,255,0.3);margin-top:5px;text-transform:uppercase;}
 .result-table{width:100%;border-collapse:collapse;font-size:0.8em;}
-.result-table th{color:rgba(255,255,255,0.3);padding:10px 12px;text-align:left;font-size:0.72em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,0.06);}
-.result-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.03);color:rgba(255,255,255,0.65);}
+.result-table th{color:rgba(255,255,255,0.3);padding:10px 12px;text-align:left;font-size:0.72em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,0.06);white-space:nowrap;}
+.result-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.03);color:rgba(255,255,255,0.65);white-space:nowrap;}
 .result-table tr:hover td{background:rgba(255,255,255,0.02);}
 .summary-box{background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.15);border-radius:12px;padding:20px;margin-bottom:20px;}
 .summary-box h4{font-size:0.9em;color:#a5b4fc;margin-bottom:12px;}
@@ -128,24 +128,24 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
 <body>
 <div class="bg-orb"></div><div class="bg-orb"></div><div class="bg-orb"></div>
 <div class="app">
-<div class="sidebar"><div class="sidebar-logo">Alloso<small>만능 취합 봇 Ver8</small></div>
+<div class="sidebar"><div class="sidebar-logo">Alloso<small>만능 취합 봇 Ver9</small></div>
 <ul class="nav-menu">
 <li class="nav-item active" onclick="switchTab('response')"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span><span>매장 답변</span></li>
 <li class="nav-item" onclick="switchTab('admin')"><span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><span>본사 관리</span></li>
 </ul></div>
 <div class="main">
 <!-- 매장 답변 -->
-<div id="tab-response" style="display:block;"><div class="page-header"><div class="page-title">매장 답변</div><div class="page-sub">배포된 조사를 선택하여 답변합니다</div></div><div id="surveyFormArea"><div class="glass"><div class="empty"><p>로딩 중...</p></div></div></div></div>
+<div id="tab-response" style="display:block;"><div class="page-header"><div class="page-title">매장 답변</div><div class="page-sub">배포된 설문을 선택하여 답변합니다</div></div><div id="surveyFormArea"><div class="glass"><div class="empty"><p>로딩 중...</p></div></div></div></div>
 <!-- 본사 관리 -->
 <div id="tab-admin" style="display:none;">
 <div id="adminLocked"><div class="lock-screen"><div class="lock-card"><div class="lock-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><h2 style="font-size:1.15em;font-weight:700;margin-bottom:7px;">본사 전용</h2><p style="color:rgba(255,255,255,0.35);font-size:0.85em;margin-bottom:24px;">비밀번호를 입력하세요</p><div class="form-group"><input type="password" id="adminPassword" placeholder="비밀번호" onkeypress="if(event.key==='Enter')checkPassword()" style="text-align:center;padding:13px;"></div><button class="btn btn-red" onclick="checkPassword()" style="width:100%;justify-content:center;padding:12px;margin-top:5px;">확인</button></div></div></div>
 <div id="adminUnlocked" style="display:none;">
-<div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;"><div><div class="page-title">본사 관리</div><div class="page-sub">조사 설정 및 취합 결과</div></div><button class="btn btn-ghost btn-sm" onclick="lockAdmin()">잠금</button></div>
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;"><div><div class="page-title">본사 관리</div><div class="page-sub">설문 설정 및 취합 결과</div></div><button class="btn btn-ghost btn-sm" onclick="lockAdmin()">잠금</button></div>
 <div class="inner-tabs"><button class="inner-tab active" onclick="switchInnerTab('settings')">설정</button><button class="inner-tab" onclick="switchInnerTab('results')">취합 결과</button></div>
 <div id="inner-settings">
-<div class="glass"><div class="glass-header"><div class="glass-title">조사 주제 목록</div><button class="btn btn-ghost btn-sm" onclick="addTopic()">+ 새 조사</button></div><div id="topicList"></div></div>
+<div class="glass"><div class="glass-header"><div class="glass-title">설문 주제 목록</div><button class="btn btn-ghost btn-sm" onclick="addTopic()">+ 새 설문</button></div><div id="topicList"></div></div>
 <div id="editorSection" class="editor-section">
-<div class="glass"><div class="glass-header"><div class="glass-title">조사 편집</div><div style="display:flex;gap:6px;"><button class="btn btn-ghost btn-xs" onclick="toggleDeploy()">배포 상태 변경</button><button class="btn btn-ghost btn-xs" style="color:#f87171;" onclick="deleteTopic()">삭제</button></div></div>
+<div class="glass"><div class="glass-header"><div class="glass-title">설문 편집</div><div style="display:flex;gap:6px;"><button class="btn btn-ghost btn-xs" onclick="toggleDeploy()">배포 상태 변경</button><button class="btn btn-ghost btn-xs" style="color:#f87171;" onclick="deleteTopic()">삭제</button></div></div>
 <div class="form-group"><label>조사 제목</label><input type="text" id="surveyTitle" placeholder="예: 리플렛 수량 파악" oninput="updateField('title')"></div>
 <div class="form-group"><label>조사 설명</label><textarea id="surveyDesc" placeholder="매장에 보여질 안내문" oninput="updateField('desc')"></textarea></div>
 <label class="chk-label"><input type="checkbox" id="chkDuplicate" onchange="updateField('allowDuplicate')"> 중복 답변 허용 (같은 매장에서 여러 번 답변 가능)</label>
@@ -153,7 +153,7 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
 <div class="glass"><div class="ai-box"><h4>AI 바이브코딩</h4><p style="font-size:0.75em;color:rgba(255,255,255,0.3);margin-bottom:10px;">품목명을 나열하고 조사 내용을 입력하세요</p><div class="ai-input-row"><input type="text" id="aiPrompt" placeholder="예: 보눔 비하르 사티 앰비언트 올콜렉션 카포네 케렌시아 홀리데이 각각 수량 파악"><button class="btn btn-ai btn-sm" onclick="generateAI()">AI 생성</button></div><div id="aiResultArea"></div></div></div>
 <div class="glass"><div class="glass-header"><div class="glass-title">질문 항목 (<span id="qCount">0</span>개)</div><div style="display:flex;gap:5px;"><button class="btn btn-ghost btn-xs" onclick="toggleBatch()">일괄수정</button><button class="btn btn-ghost btn-xs" onclick="addQ()">+추가</button></div></div><div id="batchBox" class="batch-box" style="display:none;"><div class="batch-row"><input type="text" id="bFind" placeholder="찾기"><input type="text" id="bReplace" placeholder="바꾸기"><button class="btn btn-ghost btn-xs" onclick="doBatch()">적용</button></div></div><div id="qGrid" class="q-grid"></div></div>
 <div class="glass"><div class="glass-header"><div class="glass-title">대상 매장</div><div style="display:flex;gap:5px;"><button class="btn btn-ghost btn-xs" onclick="selAll()">전체</button><button class="btn btn-ghost btn-xs" onclick="deselAll()">해제</button></div></div><div class="store-grid" id="storeSelect"></div></div>
-<div style="text-align:center;margin-top:10px;padding-bottom:14px;"><button class="btn btn-red" onclick="deploySurvey()" style="padding:13px 44px;font-size:0.9em;">선택 조사 배포</button></div>
+<div style="text-align:center;margin-top:10px;padding-bottom:14px;"><button class="btn btn-red" onclick="deploySurvey()" style="padding:13px 44px;font-size:0.9em;">선택 설문 배포</button></div>
 </div>
 </div>
 <div id="inner-results" style="display:none;">
@@ -182,8 +182,8 @@ function deselAll(){selectedStores=[];if(activeIdx>=0)topics[activeIdx].stores=[
 </script>
 <script>
 // Topics
-function addTopic(){topics.push({title:'새 조사 '+(topics.length+1),desc:'',questions:[],stores:[],status:'draft',allowDuplicate:false});activeIdx=topics.length-1;renderTopics();openEditor();}
-function renderTopics(){var c=document.getElementById('topicList');if(!topics.length){c.innerHTML='<div class="empty" style="padding:20px;"><p>새 조사를 추가해주세요</p></div>';return;}
+function addTopic(){topics.push({title:'새 설문 '+(topics.length+1),desc:'',questions:[],stores:[],status:'draft',allowDuplicate:false});activeIdx=topics.length-1;renderTopics();openEditor();}
+function renderTopics(){var c=document.getElementById('topicList');if(!topics.length){c.innerHTML='<div class="empty" style="padding:20px;"><p>새 설문을 추가해주세요</p></div>';return;}
 c.innerHTML=topics.map(function(t,i){var badge=t.status==='live'?'badge-live':t.status==='stopped'?'badge-stop':'badge-draft';var label=t.status==='live'?'배포중':t.status==='stopped'?'중지':'초안';return '<div class="topic-item '+(i===activeIdx?'active':'')+'" onclick="clickTopic('+i+')"><div><h5>'+t.title+'</h5><p>'+t.questions.length+'개 질문'+(t.allowDuplicate===true?' · 중복허용':'')+'</p></div><span class="badge '+badge+'">'+label+'</span></div>';}).join('');}
 function clickTopic(i){if(activeIdx===i){activeIdx=-1;document.getElementById('editorSection').classList.remove('open');renderTopics();return;}activeIdx=i;renderTopics();openEditor();}
 function openEditor(){var t=topics[activeIdx];document.getElementById('editorSection').classList.add('open');document.getElementById('surveyTitle').value=t.title;document.getElementById('surveyDesc').value=t.desc;document.getElementById('chkDuplicate').checked=t.allowDuplicate;selectedStores=t.stores.slice();renderStores();renderQGrid();}
@@ -193,12 +193,12 @@ function toggleDeploy(){if(activeIdx<0)return;var t=topics[activeIdx];if(t.statu
 // 상태 변경 시 자동 저장
 var liveTopics=topics.filter(function(tp){return tp.status==='live';});
 if(liveTopics.length){var settings={title:liveTopics[0].title,desc:liveTopics[0].desc,questions:liveTopics[0].questions,stores:liveTopics[0].stores,allowDuplicate:liveTopics[0].allowDuplicate,allSurveys:liveTopics,createdAt:new Date().toLocaleString('ko-KR')};post('saveSettings',settings).then(function(){currentSurvey=settings;});}}
-function deploySurvey(){if(activeIdx<0){alert('조사를 선택하세요.');return;}var t=topics[activeIdx];if(!t.title.trim()){alert('제목을 입력하세요.');return;}if(!t.questions.length){alert('질문을 추가하세요.');return;}if(!t.stores.length){alert('매장을 선택하세요.');return;}t.status='live';
+function deploySurvey(){if(activeIdx<0){alert('설문을 선택하세요.');return;}var t=topics[activeIdx];if(!t.title.trim()){alert('제목을 입력하세요.');return;}if(!t.questions.length){alert('질문을 추가하세요.');return;}if(!t.stores.length){alert('매장을 선택하세요.');return;}t.status='live';
 // 모든 live 조사를 allSurveys에 저장
 var liveTopics=topics.filter(function(tp){return tp.status==='live';});
-if(!liveTopics.length){alert('배포중인 조사가 없습니다.');return;}
+if(!liveTopics.length){alert('배포중인 설문이 없습니다.');return;}
 var settings={title:liveTopics[0].title,desc:liveTopics[0].desc,questions:liveTopics[0].questions,stores:liveTopics[0].stores,allowDuplicate:liveTopics[0].allowDuplicate,allSurveys:liveTopics,createdAt:new Date().toLocaleString('ko-KR')};
-post('saveSettings',settings).then(function(){currentSurvey=settings;alert('배포 완료 ('+liveTopics.length+'개 조사 배포중: '+liveTopics.map(function(x){return x.title;}).join(', ')+')');renderTopics();});}
+post('saveSettings',settings).then(function(){currentSurvey=settings;alert('배포 완료 ('+liveTopics.length+'개 설문 배포중: '+liveTopics.map(function(x){return x.title;}).join(', ')+')');renderTopics();});}
 // Questions
 function addQ(){if(activeIdx<0)return;topics[activeIdx].questions.push({id:Date.now(),text:'',type:'text',options:[]});renderQGrid();}
 function renderQGrid(){if(activeIdx<0)return;var qs=topics[activeIdx].questions;document.getElementById('qCount').textContent=qs.length;var c=document.getElementById('qGrid');if(!qs.length){c.innerHTML='<div class="empty" style="padding:16px;width:100%;"><p>질문 없음</p></div>';return;}
@@ -240,12 +240,12 @@ if(/[,，\/\n·]/.test(c)||c.indexOf(' 그리고 ')>-1){var ps=c.split(/[,，\/\
 var tmp=c;aw.forEach(function(w){tmp=tmp.replace(new RegExp(w,'gi'),' ').trim();});var ws=tmp.split(/\s+/).filter(function(w){return w.length>=2&&!/^\d+$/.test(w);});return ws.length>=2?ws:[];}
 function renderAI(a){var h='';var typeLabel={'text':'텍스트','number':'숫자','yesno':'예/아니오','select':'선택','date':'날짜'};aiSuggestions.forEach(function(s,i){h+='<div class="ai-option" onclick="selAI='+i+';document.querySelectorAll(\'.ai-option\').forEach(function(e,j){e.classList.toggle(\'selected\',j==='+i+');})"><h6>유형 '+(i?'B':'A')+': '+s.name+'</h6><p style="font-size:0.74em;color:rgba(255,255,255,0.4);">'+s.desc+' — '+s.questions.length+'개</p><div style="margin-top:8px;max-height:120px;overflow-y:auto;">'+s.questions.map(function(q){return '<div style="display:flex;justify-content:space-between;padding:5px 8px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:0.75em;"><span style="color:rgba(255,255,255,0.6);">'+q.text+'</span><span style="color:#e85d75;font-size:0.9em;">'+(typeLabel[q.type]||q.type)+'</span></div>';}).join('')+'</div></div>';});
 h+='<div style="display:flex;gap:6px;margin-top:10px;"><button class="btn btn-ai btn-xs" onclick="applyAI()">적용</button><button class="btn btn-ghost btn-xs" onclick="generateAI()">다시</button><button class="btn btn-ghost btn-xs" onclick="document.getElementById(\'aiResultArea\').innerHTML=\'\'">닫기</button></div>';a.innerHTML=h;}
-function applyAI(){if(selAI<0){alert('유형 선택');return;}if(activeIdx<0){alert('조사를 먼저 선택하세요.');return;}topics[activeIdx].questions=aiSuggestions[selAI].questions.map(function(q){return{id:Date.now()+Math.random(),text:q.text,type:q.type,options:q.options||[]};});renderQGrid();document.getElementById('aiResultArea').innerHTML='<p style="font-size:0.78em;color:#a5b4fc;">✓ 적용됨</p>';selAI=-1;}
+function applyAI(){if(selAI<0){alert('유형 선택');return;}if(activeIdx<0){alert('설문을 먼저 선택하세요.');return;}topics[activeIdx].questions=aiSuggestions[selAI].questions.map(function(q){return{id:Date.now()+Math.random(),text:q.text,type:q.type,options:q.options||[]};});renderQGrid();document.getElementById('aiResultArea').innerHTML='<p style="font-size:0.78em;color:#a5b4fc;">✓ 적용됨</p>';selAI=-1;}
 </script>
 <script>
 // === 매장 답변 (배포된 여러 조사 선택, 답변 완료 매장 숨기기) ===
 function loadForm(){var area=document.getElementById('surveyFormArea');area.innerHTML='<div class="glass"><div class="empty"><p>로딩 중...</p></div></div>';
-jsonpGet('getSettings').then(function(s){if(!s||!s.title){area.innerHTML='<div class="glass"><div class="empty"><p>배포된 조사가 없습니다</p></div></div>';return;}
+jsonpGet('getSettings').then(function(s){if(!s||!s.title){area.innerHTML='<div class="glass"><div class="empty"><p>배포된 설문이 없습니다</p></div></div>';return;}
 currentSurvey=s;
 var surveys=s.allSurveys&&s.allSurveys.length?s.allSurveys.filter(function(x){return x.status==='live';}):null;
 if(!surveys||!surveys.length)surveys=[s];
@@ -254,7 +254,7 @@ var h='<div class="survey-picker" id="surveyPicker">'+surveys.map(function(sv,i)
 h+='<div id="pickedBannerArea"></div><div id="dynForm"></div>';
 area.innerHTML=h;renderPickedBanner();renderSurveyForm();});}
 
-function pickSurvey(idx){if(window._pickedIdx===idx)return;if(!confirm('조사를 변경하시겠습니까?'))return;window._pickedIdx=idx;document.querySelectorAll('.survey-pick-item').forEach(function(el,i){el.classList.toggle('picked',i===idx);});renderPickedBanner();renderSurveyForm();}
+function pickSurvey(idx){if(window._pickedIdx===idx)return;if(!confirm('설문을 변경하시겠습니까?'))return;window._pickedIdx=idx;document.querySelectorAll('.survey-pick-item').forEach(function(el,i){el.classList.toggle('picked',i===idx);});renderPickedBanner();renderSurveyForm();}
 function renderPickedBanner(){var sv=window._liveSurveys[window._pickedIdx];var ba=document.getElementById('pickedBannerArea');if(!ba)return;ba.innerHTML='<div class="picked-banner"><h5>선택: '+sv.title+'</h5><span style="font-size:0.72em;color:rgba(255,255,255,0.35);">'+(sv.questions?sv.questions.length:0)+'개 질문</span></div>';}
 
 function renderSurveyForm(){var idx=window._pickedIdx||0;var sv=window._liveSurveys[idx];var area=document.getElementById('dynForm');
@@ -308,7 +308,7 @@ h+='</tbody></table></div>';sa.innerHTML=h;}
 (function(){renderStores();renderTopics();jsonpGet('getSettings').then(function(s){if(s&&s.title){currentSurvey=s;
 // 본사 관리용: 저장된 조사를 topics에 복원
 if(s.allSurveys&&s.allSurveys.length){topics=s.allSurveys.map(function(sv){return{title:sv.title||'',desc:sv.desc||'',questions:sv.questions||[],stores:sv.stores||[],status:sv.status||'live',allowDuplicate:sv.allowDuplicate||false};});}else{topics=[{title:s.title,desc:s.desc||'',questions:s.questions||[],stores:s.stores||[],status:'live',allowDuplicate:s.allowDuplicate||false}];}
-renderTopics();loadForm();}else{document.getElementById('surveyFormArea').innerHTML='<div class="glass"><div class="empty"><p>배포된 조사가 없습니다</p></div></div>';}});})();
+renderTopics();loadForm();}else{document.getElementById('surveyFormArea').innerHTML='<div class="glass"><div class="empty"><p>배포된 설문이 없습니다</p></div></div>';}});})();
 </script>
 </body>
 </html>
