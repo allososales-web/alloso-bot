@@ -129,7 +129,7 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
 <body>
 <div class="bg-orb"></div><div class="bg-orb"></div><div class="bg-orb"></div>
 <div class="app">
-<div class="sidebar"><div class="sidebar-logo">Alloso<small>만능 취합 봇 Ver12</small></div>
+<div class="sidebar"><div class="sidebar-logo">Alloso<small>만능 취합 봇 Ver13</small></div>
 <ul class="nav-menu">
 <li class="nav-item active" onclick="switchTab('response')"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span><span>매장 답변</span></li>
 <li class="nav-item" onclick="switchTab('admin')"><span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><span>본사 관리</span></li>
@@ -160,7 +160,7 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
 <div id="inner-results" style="display:none;">
 <div class="stats-grid"><div class="stat-card"><div class="stat-val" id="statTotal">0</div><div class="stat-label">전체 답변</div></div><div class="stat-card"><div class="stat-val" id="statStores">0</div><div class="stat-label">답변 매장</div></div><div class="stat-card"><div class="stat-val" id="statPending">0</div><div class="stat-label">미답변</div></div><div class="stat-card"><div class="stat-val" id="statRate">0%</div><div class="stat-label">응답률</div></div></div>
 <div id="summaryArea"></div>
-<div class="glass"><div class="glass-header"><div class="glass-title">답변 목록</div><button class="btn btn-ghost btn-sm" onclick="loadResults()">새로고침</button></div><div class="filter-bar"><select id="filterStore" onchange="filterR()"><option value="">전체 매장</option></select></div><div id="resultArea"><div class="empty"><p>아직 답변이 없습니다</p></div></div></div>
+<div class="glass"><div class="glass-header"><div class="glass-title">답변 목록</div><button class="btn btn-ghost btn-sm" onclick="loadResults()">새로고침</button></div><div class="filter-bar"><select id="filterSurvey" onchange="filterR()"><option value="">전체 설문</option></select><select id="filterStore" onchange="filterR()"><option value="">전체 매장</option></select></div><div id="resultArea"><div class="empty"><p>아직 답변이 없습니다</p></div></div></div>
 </div>
 </div></div>
 </div></div>
@@ -291,8 +291,11 @@ var ans=[];allResults.forEach(function(x){if(x.store&&ans.indexOf(x.store)===-1)
 var totalStores=0;if(currentSurvey&&currentSurvey.allSurveys){currentSurvey.allSurveys.forEach(function(sv){totalStores+=sv.stores?sv.stores.length:0;});}else if(currentSurvey&&currentSurvey.stores){totalStores=currentSurvey.stores.length;}
 document.getElementById('statTotal').textContent=allResults.length;document.getElementById('statStores').textContent=ans.length;document.getElementById('statPending').textContent=Math.max(0,totalStores-ans.length);document.getElementById('statRate').textContent=(totalStores>0?Math.round(ans.length/totalStores*100):0)+'%';
 document.getElementById('filterStore').innerHTML='<option value="">전체 매장</option>'+ans.map(function(s){return '<option value="'+s+'">'+s+'</option>';}).join('');
+// 설문 필터
+var svTitles=[];allResults.forEach(function(r){if(r.surveyTitle&&svTitles.indexOf(r.surveyTitle)===-1)svTitles.push(r.surveyTitle);});
+document.getElementById('filterSurvey').innerHTML='<option value="">전체 설문</option>'+svTitles.map(function(t){return '<option value="'+t+'">'+t+'</option>';}).join('');
 renderSummary();renderR(allResults);});}
-function filterR(){var f=document.getElementById('filterStore').value;renderR(f?allResults.filter(function(r){return r.store===f;}):allResults);}
+function filterR(){var fs=document.getElementById('filterSurvey').value;var fm=document.getElementById('filterStore').value;var filtered=allResults.slice();if(fs)filtered=filtered.filter(function(r){return r.surveyTitle===fs;});if(fm)filtered=filtered.filter(function(r){return r.store===fm;});renderR(filtered);}
 
 function renderR(data){var area=document.getElementById('resultArea');if(!data||!data.length){area.innerHTML='<div class="empty"><p>답변 없음</p></div>';return;}
 // 설문별 그룹핑
