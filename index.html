@@ -262,7 +262,10 @@ h+='<tr><td style="font-weight:600;color:#fff;">'+q.text+'</td><td>'+sum+'</td><
 h+='</tbody></table></div>';sa.innerHTML=h;}
 
 // Init
-(function(){renderStores();renderTopics();jsonpGet('getSettings').then(function(s){if(s&&s.title){currentSurvey=s;loadForm();}else{document.getElementById('surveyFormArea').innerHTML='<div class="glass"><div class="empty"><p>배포된 조사가 없습니다</p></div></div>';}});})();
+(function(){renderStores();renderTopics();jsonpGet('getSettings').then(function(s){if(s&&s.title){currentSurvey=s;
+// 본사 관리용: 저장된 조사를 topics에 복원
+if(s.allSurveys&&s.allSurveys.length){topics=s.allSurveys.map(function(sv){return{title:sv.title||'',desc:sv.desc||'',questions:sv.questions||[],stores:sv.stores||[],status:sv.status||'live',allowDuplicate:sv.allowDuplicate||false};});}else{topics=[{title:s.title,desc:s.desc||'',questions:s.questions||[],stores:s.stores||[],status:'live',allowDuplicate:s.allowDuplicate||false}];}
+renderTopics();loadForm();}else{document.getElementById('surveyFormArea').innerHTML='<div class="glass"><div class="empty"><p>배포된 조사가 없습니다</p></div></div>';}});})();
 </script>
 </body>
 </html>
