@@ -20,7 +20,7 @@ body{font-family:'Inter',sans-serif;min-height:100vh;background:linear-gradient(
 @keyframes newFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-2px);}}
 .new-dot{display:inline-flex;align-items:center;padding:4px 10px;background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.25);border-radius:20px;font-size:0.62em;font-weight:700;color:rgba(147,197,253,0.9);letter-spacing:0.5px;backdrop-filter:blur(8px);animation:newFloat 2s ease-in-out infinite;box-shadow:0 2px 12px rgba(59,130,246,0.1);}
 .app{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh;}
-.sidebar{width:100%;background:rgba(15,23,42,0.5);border-bottom:1px solid rgba(255,255,255,0.04);padding:18px 10%;backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:space-between;}
+.sidebar{width:100%;background:rgba(15,23,42,0.5);border-bottom:1px solid rgba(255,255,255,0.04);padding:18px 20%;backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:space-between;}
 .sidebar-logo{font-size:1.2em;font-weight:800;letter-spacing:1.5px;background:linear-gradient(90deg,#fff,#93c5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .sidebar-logo small{font-size:0.5em;font-weight:400;-webkit-text-fill-color:rgba(255,255,255,0.35);margin-left:8px;letter-spacing:0.5px;}
 .nav-menu{list-style:none;display:flex;gap:4px;padding:0;}
@@ -29,7 +29,7 @@ body{font-family:'Inter',sans-serif;min-height:100vh;background:linear-gradient(
 .nav-item.active{color:#fff;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.15);}
 .nav-item.active::after{content:'';position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);width:16px;height:2px;background:#3b82f6;border-radius:2px;}
 .nav-icon svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
-.main{padding:36px 10%;}
+.main{padding:36px 20%;}
 .page-header{margin-bottom:36px;animation:fadeUp 0.5s ease;}
 .page-title{font-size:1.8em;font-weight:800;letter-spacing:-0.5px;}
 .page-sub{font-size:0.85em;color:rgba(255,255,255,0.4);margin-top:6px;}
@@ -133,7 +133,7 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
 <body>
 <div class="bg-orb"></div><div class="bg-orb"></div><div class="bg-orb"></div>
 <div class="app">
-<div class="sidebar"><div class="sidebar-logo">Alloso<small>만능 취합 봇 Ver20</small></div>
+<div class="sidebar"><div class="sidebar-logo">Alloso<small>만능 취합 봇 Ver21</small></div>
 <ul class="nav-menu">
 <li class="nav-item active" onclick="switchTab('response')"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span><span>매장 답변</span></li>
 <li class="nav-item" onclick="switchTab('admin')"><span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><span>본사 관리</span></li>
