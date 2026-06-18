@@ -169,7 +169,7 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
 <div id="resultContent" style="display:none;">
 <div class="stats-grid"><div class="stat-card"><div class="stat-val" id="statTotal">0</div><div class="stat-label">전체 답변</div></div><div class="stat-card"><div class="stat-val" id="statStores">0</div><div class="stat-label">답변 매장</div></div><div class="stat-card"><div class="stat-val" id="statPending">0</div><div class="stat-label">미답변</div></div><div class="stat-card"><div class="stat-val" id="statRate">0%</div><div class="stat-label">응답률</div></div></div>
 <div id="summaryArea"></div>
-<div class="glass"><div class="glass-header"><div class="glass-title">답변 목록</div></div><div class="filter-bar"><select id="filterStore" onchange="filterR()"><option value="">전체 매장</option></select></div><div id="resultArea"><div class="empty"><p>아직 답변이 없습니다</p></div></div></div>
+<div class="glass"><div class="glass-header"><div class="glass-title">답변 목록</div><button class="btn btn-ghost btn-sm" onclick="copyTableToClipboard()">복사</button></div><div class="filter-bar"><select id="filterStore" onchange="filterR()"><option value="">전체 매장</option></select></div><div id="resultArea"><div class="empty"><p>아직 답변이 없습니다</p></div></div></div>
 </div>
 </div>
 </div></div>
@@ -347,6 +347,9 @@ h+='</tbody></table></div>';sa.innerHTML=h;}
 // Number formatting
 function formatNum(el){var v=el.value.replace(/[^\d]/g,'');el.value=v?Number(v).toLocaleString('ko-KR'):'';}
 function fmtN(v){var n=parseFloat(String(v).replace(/,/g,''));return isNaN(n)?v:n.toLocaleString('ko-KR');}
+
+// Copy table to clipboard (tab-separated for spreadsheet paste)
+function copyTableToClipboard(){var table=document.querySelector('#resultArea table');if(!table){alert('복사할 데이터가 없습니다.');return;}var rows=table.querySelectorAll('tr');var tsv='';rows.forEach(function(row){var cells=row.querySelectorAll('th,td');var line=[];cells.forEach(function(cell){line.push(cell.textContent.trim());});tsv+=line.join('\t')+'\n';});navigator.clipboard.writeText(tsv).then(function(){alert('클립보드에 복사되었습니다.\n구글시트/엑셀에 붙여넣기(Ctrl+V) 하세요.');}).catch(function(){var ta=document.createElement('textarea');ta.value=tsv;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);alert('복사 완료');});}
 
 // Init
 (function(){renderStores();renderTopics();jsonpGet('getSettings').then(function(s){if(s&&s.title){currentSurvey=s;
